@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <property name="LOGS_PATH" value="/home1/irteam/logs/spring-boot-app"/>
+    <property name="LOG_FILE" value="game-demo-server.log"/>
+
+    <appender name="STORE_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOGS_PATH}/${LOG_FILE}</file>
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOGS_PATH}/${LOG_FILE}.%d{yyyy-MM-dd}.%i</fileNamePattern>
+            <timeBasedFileNamingAndTriggeringPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+                <maxFileSize>20mb</maxFileSize>
+            </timeBasedFileNamingAndTriggeringPolicy>
+            <totalSizeCap>10gb</totalSizeCap>
+        </rollingPolicy>
+    </appender>
+
+    <springProfile name="local | test">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE"/>
+        </root>
+        <logger name="com.naver.music" additivity="false">
+            <level value="TRACE"/>
+            <appender-ref ref="CONSOLE"/>
+        </logger>
+    </springProfile>
+
+    <springProfile name="dev | dev-int | dev-ext">
+        <root level="INFO">
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="STORE_FILE" />
+        </root>
+
+        <logger name="com.naver" additivity="false">
+            <level value="WARN"/>
+        </logger>
+
+        <logger name="com.naver.music">
+            <level value="DEBUG"/>
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="STORE_FILE" />
+        </logger>
+    </springProfile>
+
+    <springProfile name="stage | stage-int | stage-ext | real | real-int | real-ext">
+        <root level="INFO">
+            <appender-ref ref="STORE_FILE" />
+        </root>
+
+        <logger name="com.naver" additivity="false">
+            <level value="WARN"/>
+        </logger>
+
+        <logger name="com.naver.music">
+            <level value="INFO"/>
+            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="STORE_FILE" />
+        </logger>
+    </springProfile>
+
+</configuration>
